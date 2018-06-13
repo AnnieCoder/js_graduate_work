@@ -5,7 +5,6 @@ class Vector {
 		this.y = y;
 	}
 	plus(currentVector) {
-		// лучше сначала проверку аргументов, а потом основной код
 		if (!(currentVector instanceof Vector)) {
 			throw new Error('Можно прибавлять к вектору только вектор типа Vector.');
 		}
