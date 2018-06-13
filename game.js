@@ -168,13 +168,17 @@ class LevelParser {
 	}
 
 	createGrid(plan) {
+		// тут нужно использовать obstacleFromSymbol
 		return plan.map(row => row.split('').map(sign => FIXED[sign]));
 	}
 
 	createActors(plan) {
+		// можно обойтись без промежуточной переменной, если использовать метод reduce
 		const actors = [];
 		plan.forEach((rowY, y) => {
 			rowY.split('').forEach((rowX, x) => {
+				// не ошибка, но constructor лучше не использовать в качестве названия переменной
+				// (зарезервированное слово)
 				const constructor = this.actorFromSymbol(rowX);
 				if (typeof constructor !== 'function') {
 					return;
@@ -235,6 +239,7 @@ class VerticalFireball extends Fireball {
 
 class FireRain extends Fireball {
 	constructor(currentPosition) {
+		// const
 		let speed = new Vector(0, 3);
 		super(currentPosition, speed);
 		this.startPosition = currentPosition;
@@ -247,6 +252,7 @@ class FireRain extends Fireball {
 
 class Coin extends Actor {
 	constructor(currentPosition = new Vector(0, 0)) {
+		// лучше не менть значения аргументов
 		currentPosition = currentPosition.plus(new Vector(0.2, 0.1));
 		super(currentPosition, new Vector(0.6, 0.6));
 		this.startPosition = currentPosition;
@@ -279,6 +285,7 @@ class Coin extends Actor {
 
 class Player extends Actor {
 	constructor(currentPosition = new Vector(0, 0)) {
+    // лучше не менть значения аргументов
 		currentPosition = currentPosition.plus(new Vector(0, -0.5));
 		super(currentPosition, new Vector(0.8, 1.5), new Vector(0, 0));
 	}
