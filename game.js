@@ -168,29 +168,26 @@ class LevelParser {
 	}
 
 	createGrid(plan) {
-		// тут нужно использовать obstacleFromSymbol
-		return plan.map(row => row.split('').map(sign => FIXED[sign]));
+		return plan
+			.map(row => row.split(''))
+			.map(sign => sign.map(sign => this.obstacleFromSymbol(sign)));
 	}
 
 	createActors(plan) {
-		// можно обойтись без промежуточной переменной, если использовать метод reduce
-		const actors = [];
-		plan.forEach((rowY, y) => {
+		return plan.reduce((prev, rowY, y) => {
 			rowY.split('').forEach((rowX, x) => {
-				// не ошибка, но constructor лучше не использовать в качестве названия переменной
-				// (зарезервированное слово)
+				//Согласна, но если задать переменной другое имя, то тесты по классу Actor завершаются ошибкой
 				const constructor = this.actorFromSymbol(rowX);
 				if (typeof constructor !== 'function') {
 					return;
 				}
-
 				const actor = new constructor(new Vector(x, y));
 				if (actor instanceof Actor) {
-					actors.push(actor);
+					prev.push(actor);
 				}
 			});
-		});
-		return actors;
+			return prev;
+		}, []);
 	}
 
 	parse(plan) {
@@ -239,9 +236,7 @@ class VerticalFireball extends Fireball {
 
 class FireRain extends Fireball {
 	constructor(currentPosition) {
-		// const
-		let speed = new Vector(0, 3);
-		super(currentPosition, speed);
+		super(currentPosition, new Vector(0, 3));
 		this.startPosition = currentPosition;
 	}
 
@@ -252,10 +247,9 @@ class FireRain extends Fireball {
 
 class Coin extends Actor {
 	constructor(currentPosition = new Vector(0, 0)) {
-		// лучше не менть значения аргументов
-		currentPosition = currentPosition.plus(new Vector(0.2, 0.1));
-		super(currentPosition, new Vector(0.6, 0.6));
-		this.startPosition = currentPosition;
+		const newPosition = currentPosition.plus(new Vector(0.2, 0.1));
+		super(newPosition, new Vector(0.6, 0.6));
+		this.startPosition = newPosition;
 		this.springSpeed = 8;
 		this.springDist = 0.07;
 		this.spring = Math.random() * 2 * Math.PI;
@@ -285,9 +279,8 @@ class Coin extends Actor {
 
 class Player extends Actor {
 	constructor(currentPosition = new Vector(0, 0)) {
-    // лучше не менть значения аргументов
-		currentPosition = currentPosition.plus(new Vector(0, -0.5));
-		super(currentPosition, new Vector(0.8, 1.5), new Vector(0, 0));
+		const newPosition = currentPosition.plus(new Vector(0, -0.5));
+		super(newPosition, new Vector(0.8, 1.5), new Vector(0, 0));
 	}
 
 	get type() {
@@ -296,17 +289,16 @@ class Player extends Actor {
 }
 
 const actorDict = {
-  '@': Player,
-  'v': FireRain,
-  'o': Coin,
-  '=': HorizontalFireball,
-  '|': VerticalFireball
-
+	'@': Player,
+	v: FireRain,
+	o: Coin,
+	'=': HorizontalFireball,
+	'|': VerticalFireball,
 };
 const parser = new LevelParser(actorDict);
 
-loadLevels()
-  .then((res) => {
-    runGame(JSON.parse(res), parser, DOMDisplay)
-      .then(() => alert('Вы выиграли!'))
-  });
+loadLevels().then(res => {
+	runGame(JSON.parse(res), parser, DOMDisplay).then(() =>
+		alert('Вы выиграли!')
+	);
+});
