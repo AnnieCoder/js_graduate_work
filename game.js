@@ -71,8 +71,8 @@ class Actor {
 
 class Level {
 	constructor(grid = [], actors = []) {
-		this.grid = grid;
-		this.actors = actors;
+		this.grid = grid.slice();
+		this.actors = actors.slice();
 		this.player = this.actors.find(actor => actor.type === 'player');
 		this.status = null;
 		this.finishDelay = 1;
@@ -176,12 +176,11 @@ class LevelParser {
 	createActors(plan) {
 		return plan.reduce((prev, rowY, y) => {
 			rowY.split('').forEach((rowX, x) => {
-				//Согласна, но если задать переменной другое имя, то тесты по классу Actor завершаются ошибкой
-				const constructor = this.actorFromSymbol(rowX);
-				if (typeof constructor !== 'function') {
+				const actorConstructor = this.actorFromSymbol(rowX);
+				if (typeof actorConstructor !== 'function') {
 					return;
 				}
-				const actor = new constructor(new Vector(x, y));
+				const actor = new actorConstructor(new Vector(x, y));
 				if (actor instanceof Actor) {
 					prev.push(actor);
 				}
